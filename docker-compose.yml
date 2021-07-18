@@ -1,0 +1,14 @@
+version: '2.1'
+
+
+services:
+  web:
+    image: nginx
+    restart: always
+    network_mode: bridge
+    ports:
+      - 8110:80
+    environment:
+      - TZ="America/Chicago"
+    volumes:
+      - ./${WEBROOT}:/usr/share/nginx/html
