@@ -3,12 +3,11 @@ version: '2.1'
 
 services:
   web:
-    image: nginx
+    build: 
+      context: ./
     restart: always
     network_mode: bridge
-    ports:
-      - 8110:80
     environment:
       - TZ="America/Chicago"
     volumes:
-      - ./${WEBROOT}:/usr/share/nginx/html
+      - ./${WEBROOT}:/project
