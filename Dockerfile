@@ -3,6 +3,8 @@ FROM alpine:latest
 RUN apk update && \
 apk add python3 py3-pip git bash curl openssh-client
 
+RUN apk add py3-setuptools
+
 RUN adduser -D -u 1000 git
 
 USER git
