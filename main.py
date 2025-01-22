@@ -14,6 +14,9 @@ print(f"{HOME}/.ssh/known_hosts")
 with open(f"{HOME}/.ssh/known_hosts", "w") as f:
     subprocess.call(["/usr/bin/ssh-keyscan", "github.com"], stdout=f)
 
+# Mark the project directory as safe for Git
+subprocess.run(["git", "config", "--global", "--add", "safe.directory", PROJECT_DIR], check=True)
+
 # Ensure the project directory is ready for cloning or pulling
 if os.path.exists(PROJECT_DIR):
     # Check if the directory contains files, including "lost+found"
