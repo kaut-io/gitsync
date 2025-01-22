@@ -14,13 +14,10 @@ print(f"{HOME}/.ssh/known_hosts")
 with open(f"{HOME}/.ssh/known_hosts", "w") as f:
     subprocess.call(["/usr/bin/ssh-keyscan", "github.com"], stdout=f)
 
-# Make Git trust the /project directory
-subprocess.run(["git", "config", "--global", "--add", "safe.directory", PROJECT_DIR], check=True)
-
 # Ensure the project directory is ready for cloning or pulling
 if os.path.exists(PROJECT_DIR):
-    # Check if the directory only contains "lost+found"
-    if os.listdir(PROJECT_DIR) == ["lost+found"]:
+    # Check if the directory contains files, including "lost+found"
+    if "lost+found" in os.listdir(PROJECT_DIR) and len(os.listdir(PROJECT_DIR)) == 1:
         print("Project directory only contains 'lost+found'. Proceeding with clone...")
         subprocess.run(["rm", "-rf", f"{PROJECT_DIR}/lost+found"], check=True)
 
@@ -30,8 +27,10 @@ if os.path.exists(PROJECT_DIR):
             print(f"Mismatch in repository URL. Found {g.remotes.origin.url}, expected {GIT_REPO}.")
             raise ValueError("Invalid repository URL.")
         print("Repository already exists. Pulling latest changes...")
-        g.git.checkout(BRANCH)
-        g.remotes.origin.pull()
+
+        # Reset to the remote branch to ensure a clean state
+        g.git.fetch("--all")
+        g.git.reset("--hard", f"origin/{BRANCH}")
     except (git.exc.InvalidGitRepositoryError, ValueError):
         print("Existing directory is not a valid repository. Cleaning up...")
         subprocess.run(["rm", "-rf", f"{PROJECT_DIR}/*"], check=True)
@@ -43,5 +42,8 @@ else:
 # Start the sync loop
 while True:
     g = git.cmd.Git(PROJECT_DIR)
-    g.pull()
+    try:
+        g.pull()
+    except git.exc.GitCommandError as e:
+        print(f"Error during pull: {e}")
     sleep(300)
