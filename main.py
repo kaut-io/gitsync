@@ -31,7 +31,7 @@ if os.path.exists(PROJECT_DIR):
         g.remotes.origin.pull()
     except (git.exc.InvalidGitRepositoryError, ValueError):
         print("Existing directory is not a valid repository. Cleaning up...")
-        subprocess.run(["rm", "-rf", PROJECT_DIR], check=True)
+        subprocess.run(["rm", "-rf", f"{PROJECT_DIR}/*"], check=True)
         subprocess.run(["git", "clone", "--branch", BRANCH, GIT_REPO, PROJECT_DIR], check=True)
 else:
     print("Cloning repository...")
