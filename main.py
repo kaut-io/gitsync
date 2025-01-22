@@ -8,12 +8,8 @@ from os import environ
 HOME = environ['HOME']
 print(f"{HOME}/.ssh/known_hosts")
 
-overwrite = True  # Set to True to overwrite, False to append
-
-mode = "w" if overwrite else "a"
-with open(f"{HOME}/.ssh/known_hosts", mode) as f:
-    subprocess.call(["/usr/bin/ssh-keyscan", "github.com"], stdout=f)
-
+f = open(f"{HOME}/.ssh/known_hosts", "w")
+subprocess.call(["/usr/bin/ssh-keyscan", "github.com"], stdout=f)
 
 while True:
     g = git.cmd.Git("/project")
